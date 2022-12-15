@@ -43,15 +43,15 @@
     <% } else { 
         let count = 0%>  <table>
             <% for (let book in Books) { %>
-                <% if (count%3 == 0) {%> <tr> <% } %>
-                <td>
+                <% if (count%5 == 0) {%> <tr> <% } %>
+                <td style="padding: 15px;">
                     <img id="image" src="/<%= book%>.jpg" width="193" height="300">
                     <br>
                     <label id ="label2" class="ml-4 my-2"><%= Books[book].title%></label>
                     <br>
-                    <button onclick="location.href = '/<%= book%>';" id="<%= book%>" class="btn btn-secondary ml-3"> View </button>
+                    <button onclick="location.href = '/<%= book%>';" id="<%= book%>" class="btn btn-secondary ml-3" style="position: relative; left: 50px;"> View </button>
                 </td>
-                <% if (count%3 == 2) {%> </tr> <% } %>
+                <% if (count%5 == 4) {%> </tr> <% } %>
                 <% count++
             }%> 
     </table>
