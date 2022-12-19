@@ -77,8 +77,14 @@
         At the dawn of the next world war, a plane crashes on an uncharted island, stranding a group of schoolboys. At first, with no adult supervision, their freedom is something to celebrate; this far from civilization the boys can do anything they want. Anything.
     </div>
     <div class="readlist">
-        <button id="readlist" class="btn btn-secondary ml-3">Add to Want to Read List</button>
-    </div>
+        <form method="post" action="/readlist/flies">
+            <button id="readlist" class="btn btn-secondary ml-3">
+                <%=
+                    (userReadList.includes("flies"))? "Added to Want to Read List": "Add to Want to Read List"; 
+                %>
+            </button>
+        </form>
+        </div>
     <div class="video">
         <video width="480" height="360" controls>
             <source src="/flies.mp4">

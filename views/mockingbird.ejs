@@ -77,7 +77,13 @@
             The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it, To Kill A Mockingbird became both an instant bestseller and a critical success when it was first published in 1960. It went on to win the Pulitzer Prize in 1961 and was later made into an Academy Award-winning film, also a classic.
     </div>
     <div class="readlist">
-        <button id="readlist" class="btn btn-secondary ml-3">Add to Want to Read List</button>
+        <form method="post" action="/readlist/mockingbird">
+            <button id="readlist" class="btn btn-secondary ml-3">
+                <%=
+                    (userReadList.includes("mockingbird"))? "Added to Want to Read List": "Add to Want to Read List"; 
+                %>
+            </button>
+        </form>
     </div>
     <div class="video">
         <video width="480" height="360" controls>

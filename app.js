@@ -54,8 +54,27 @@ app.get('/:path', (req, res) => {
     // if not logged in yet, redirect to login screen
     if (!req.session.loggedin && req.params.path != 'registration') return res.redirect(`login`);
 
-    res.render(path.join(__dirname, `views/${req.params.path}.ejs`));
+    const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`));
+    let user = Users[req.session.username];
+    res.render(path.join(__dirname, `views/${req.params.path}.ejs`), {userReadList: user.readList});
 })
+
+/*app.post('/readlist/:bookid', (req, res) => {
+    const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`));
+    let bookId = req.params.bookid;
+    if(!Users[req.session.username].readList.includes(bookId))
+        Users[req.session.username].readList.push(bookId);
+    fs.writeFile(`./localDB/users.json`, JSON.stringify(Users), 'utf8', (err) => {
+        if (err) {
+            console.log(err);
+            res.status(500).end();
+        } else {
+            res.redirect("../home");
+            //res.redirect("../" + bookId);
+            //res.end();
+        }
+    })
+});;*/
 
 app.post('/:path', (req, res) => {
     switch (req.params.path.toLowerCase()) {
@@ -125,12 +144,32 @@ app.post('/:path', (req, res) => {
             res.redirect(`login`)
             return
         }
+
+        case "/readlist/:bookid": {
+            const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`));
+            let bookId = req.params.bookid;
+            if(!Users[req.session.username].readList.includes(bookId))
+                Users[req.session.username].readList.push(bookId);
+            fs.writeFile(`./localDB/users.json`, JSON.stringify(Users), 'utf8', (err) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).end();
+                } else {
+                    res.redirect("../home");
+                    //res.redirect("../" + bookId);
+                    //res.end();
+                }
+            });
+        }
+
         default: {
             res.status(404).send(`POST Request Called ${req.params.path}`);
             console.log(req.body)
         }
     }
 })
+
+
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)

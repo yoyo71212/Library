@@ -78,8 +78,14 @@
         A poetry collection by American poet Walt Whitman (1819–1892), each poem of which is loosely connected and represents the celebration of his philosophy of life and humanity.
     </div>
     <div class="readlist">
-        <button id="readlist" class="btn btn-secondary ml-3">Add to Want to Read List</button>
-    </div>
+        <form method="post" action="/readlist/leaves">
+            <button id="readlist" class="btn btn-secondary ml-3">
+                <%=
+                    (userReadList.includes("leaves"))? "Added to Want to Read List": "Add to Want to Read List"; 
+                %>
+            </button>
+        </form>
+        </div>
     <div class="video">
         <video width="480" height="360" controls>
             <source src="/leaves.mp4">
