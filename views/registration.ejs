@@ -13,12 +13,38 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
-        .cont {
+        .centerMain {
             position:relative;
-            left:600px;
-            top:50px;
+            margin: auto;
+            width: 25%;
+        }
+        .cont {
+            margin-top:25%;
             color: white;
             -webkit-text-stroke: 0.5px black;
+        }
+        /* The alert message box */
+        .alert {
+            margin-top: 15px;
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+
+        /* The close button */
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* When moving the mouse over the close button */
+        .closebtn:hover {
+            color: black;
         }
     </style>
     <meta charset="UTF-8">
@@ -30,17 +56,26 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Registration</h1>
-    </div>
-    <div class="cont">
-        <form method='post' action='/register'>
-            Username: <br>
-            <input type="text" id="user" name="username"> <br>
-            Password: <br>
-            <input type="password" id="password" name="password"> <br> <br>
-            <input type="submit" id="simple_click" class="btn btn-secondary" value="Register"> <br>
-        </form>
+    <div class="centerMain" align="center">
+        <div class="container">
+            <h1>Registration</h1>
+        </div>
+
+        <div class="cont">
+            <form method='post' action='/register'>
+                Username: <br>
+                <input type="text" id="user" name="username"> <br>
+                Password: <br>
+                <input type="password" id="password" name="password"> <br> <br>
+                <input type="submit" id="simple_click" class="btn btn-secondary" value="Register"> <br>
+            </form>
+        </div>
+        <% if(errorMsg.message != undefined) { %> 
+            <div class="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                <%= errorMsg.message %> 
+            </div>
+        <% } %> 
     </div>
 </body>
 
