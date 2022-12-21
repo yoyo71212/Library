@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // Create sessions for user logins
 app.use(session({secret:'Secret Value', name: Date.now().toString(16), resave: false, saveUninitialized:false}))
+app.use(function(req, res, next) {res.locals.errorMsg = {}; next();}) 
 
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -36,7 +37,7 @@ app.get('/readlist', (req, res) => {
     const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`))
     let user = Users[req.session.username]
 
-    if (user == undefined) return res.send(`User not found!`)
+    if (user == undefined) return res.redirect(`login`)
 
     let Books = {}
     for (let bookId of user.readList) {
@@ -55,15 +56,18 @@ app.get('/:path', (req, res) => {
     if (!req.session.loggedin && req.params.path != 'registration') return res.redirect(`login`);
 
     const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`));
-    let user = Users[req.session.username];
-    res.render(path.join(__dirname, `views/${req.params.path}.ejs`), {userReadList: user.readList});
+    let user = Users[req?.session?.username];
+    res.render(path.join(__dirname, `views/${req.params.path}.ejs`), {userReadList: user?.readList});
 })
 
-/*app.post('/readlist/:bookid', (req, res) => {
+app.post('/readlist/:bookid', (req, res) => {
     const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`));
     let bookId = req.params.bookid;
-    if(!Users[req.session.username].readList.includes(bookId))
-        Users[req.session.username].readList.push(bookId);
+
+    // make sure user logged in
+    if(req.session.username == undefined) return res.redirect(`../login`);
+
+    if(!Users[req.session.username].readList.includes(bookId)) Users[req.session.username].readList.push(bookId);
     fs.writeFile(`./localDB/users.json`, JSON.stringify(Users), 'utf8', (err) => {
         if (err) {
             console.log(err);
@@ -74,7 +78,7 @@ app.get('/:path', (req, res) => {
             //res.end();
         }
     })
-});;*/
+});
 
 app.post('/:path', (req, res) => {
     switch (req.params.path.toLowerCase()) {
@@ -100,13 +104,13 @@ app.post('/:path', (req, res) => {
             let {username, password} = req.body;
 
             // Ensure no empty field
-            if (!username || !password) return res.status(200).send(`Please enter both the username and password.`)
+            if (!username || !password) return res.status(200).render(path.join(__dirname, `views/login.ejs`), {errorMsg: {message:`Please enter both the username and password.`}})
 
             // User does not exist
-            if (!Users[username]) return res.status(200).send(`User ${username} does not exist<br>Would you like to register?`)
+            if (!Users[username]) return res.status(200).render(path.join(__dirname, `views/login.ejs`), {errorMsg: {message:`User ${username} does not exist.`}})
 
             if (Users[username]?.password != password) {
-                return res.status(200).send(`Incorrect password!`)
+                return res.status(200).render(path.join(__dirname, `views/login.ejs`), {errorMsg: {message:`Incorrect password!`}})
             } else {
                 // Log in
                 req.session.loggedin = true;
@@ -116,15 +120,14 @@ app.post('/:path', (req, res) => {
             }
         }
         case "register": {
-            // TODO
             const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`))
             let {username, password} = req.body;
             
             // Ensure no empty field
-            if (!username || !password) return res.status(200).send(`Please enter both the username and password.`)
+            if (!username || !password) return res.status(200).render(path.join(__dirname, `views/registration.ejs`), {errorMsg: {message:`Please enter both the username and password.`}})
 
             // User already exists
-            if (Users[username]) return res.status(200).send(`Username ${username} already taken!`)
+            if (Users[username]) return res.status(200).render(path.join(__dirname, `views/registration.ejs`), {errorMsg: {message:`Username ${username} already taken!`}})
 
             // Add user to DB
             Users[username] = {
@@ -144,27 +147,9 @@ app.post('/:path', (req, res) => {
             res.redirect(`login`)
             return
         }
-
-        case "/readlist/:bookid": {
-            const Users = JSON.parse(fs.readFileSync(`./localDB/users.json`));
-            let bookId = req.params.bookid;
-            if(!Users[req.session.username].readList.includes(bookId))
-                Users[req.session.username].readList.push(bookId);
-            fs.writeFile(`./localDB/users.json`, JSON.stringify(Users), 'utf8', (err) => {
-                if (err) {
-                    console.log(err);
-                    res.status(500).end();
-                } else {
-                    res.redirect("../home");
-                    //res.redirect("../" + bookId);
-                    //res.end();
-                }
-            });
-        }
-
         default: {
             res.status(404).send(`POST Request Called ${req.params.path}`);
-            console.log(req.body)
+            console.log(req.body.params)
         }
     }
 })

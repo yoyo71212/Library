@@ -78,7 +78,7 @@
     </div>
     <div class="readlist">
         <form method="post" action="/readlist/sun">
-            <button id="readlist" class="btn btn-secondary ml-3">
+            <button id="readlist" class="btn btn-secondary ml-3" <%= (userReadList.includes("sun")) ? 'disabled="true"' : ''%>>
                 <%=
                     (userReadList.includes("sun"))? "Added to Want to Read List": "Add to Want to Read List"; 
                 %>
